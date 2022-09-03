@@ -236,12 +236,12 @@
 *   TL_RES_LEN - sinus resolution (X axis)
 */
 #define TL_TAB_LEN (13*2*TL_RES_LEN)
-static signed int tl_tab[TL_TAB_LEN];
+//static signed int tl_tab[TL_TAB_LEN];
 
 #define ENV_QUIET       (TL_TAB_LEN>>3)
 
 /* sin waveform table in 'decibel' scale */
-static unsigned int sin_tab[SIN_LEN];
+//static unsigned int sin_tab[SIN_LEN];
 
 /* sustain level table (3dB per step) */
 /* bit0, bit1, bit2, bit3, bit4, bit5, bit6 */
@@ -534,7 +534,8 @@ static const UINT8 lfo_pm_output[7*8][8]={
 };
 
 /* all 128 LFO PM waveforms */
-static INT32 lfo_pm_table[128*8*32]; /* 128 combinations of 7 bits meaningful (of F-NUMBER), 8 LFO depths, 32 LFO output levels per one depth */
+//static INT32 lfo_pm_table[128*8*32]; /* 128 combinations of 7 bits meaningful (of F-NUMBER), 8 LFO depths, 32 LFO output levels per one depth */
+#include "fmopn_tables.h"
 
 /* register number to channel number , slot offset */
 #define OPN_CHAN(N) (N&3)
@@ -2098,6 +2099,7 @@ static void reset_channels( FM_ST *ST , FM_CH *CH , int num )
 /* initialize generic tables */
 static void init_tables(void)
 {
+#if 0
 	signed int i,x;
 	signed int n;
 	double o,m;
@@ -2215,6 +2217,7 @@ static void init_tables(void)
 
 		}
 	}
+#endif
 }
 
 #endif /* BUILD_OPN */
