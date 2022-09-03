@@ -62,6 +62,12 @@ void Resmpl_Init(RESMPL_STATE* CAA)
 	}*/
 
 	CAA->smplBufSize = CAA->smpRateSrc / 50;	// reserve buffer for 20ms of samples
+
+	// make sure we can handle a 512 sample output buffer
+	int minBufSize = 512 * CAA->smpRateSrc / CAA->smpRateDst + 2;
+	if (minBufSize > CAA->smplBufSize)
+		CAA->smplBufSize = minBufSize;
+
 	CAA->smplBufs[0] = (DEV_SMPL*)malloc(CAA->smplBufSize * 2 * sizeof(DEV_SMPL));
 	CAA->smplBufs[1] = &CAA->smplBufs[0][CAA->smplBufSize];
 
