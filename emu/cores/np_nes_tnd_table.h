@@ -1,4 +1,4 @@
-static const UINT32 tnd_table[2][16][16][128] = {
+static const UINT16 tnd_table[2][16][16][128] = {
     {
         {
             {
