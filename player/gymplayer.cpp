@@ -2,7 +2,9 @@
 #include <string.h>
 #include <vector>
 #include <algorithm>
+#ifdef HAVE_ZLIB
 #include <zlib.h>
+#endif
 
 #define INLINE	static inline
 
@@ -149,6 +151,7 @@ UINT8 GYMPlayer::LoadFile(DATA_LOADER *dataLoader)
 
 UINT8 GYMPlayer::DecompressZlibData(void)
 {
+#ifdef HAVE_ZLIB
 	z_stream zStream;
 	int ret;
 	
@@ -179,6 +182,9 @@ UINT8 GYMPlayer::DecompressZlibData(void)
 	_fileData = &_decFData[0];
 	_fileLen = (UINT32)_decFData.size();
 	return (ret == Z_OK || ret == Z_STREAM_END) ? 0x00 : 0x01;
+#else
+    return 0x01;
+#endif
 }
 
 void GYMPlayer::CalcSongLength(void)
