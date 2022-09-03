@@ -47,7 +47,7 @@ struct _NES_DMC
 	//const int GETA_BITS;
 	//static const UINT32 freq_table[2][16];
 	//static const UINT32 wavlen_table[2][16];
-	UINT32 tnd_table[2][16][16][128];
+	//UINT32 tnd_table[2][16][16][128];
 
 	int option[OPT_END];
 	int mask;
@@ -134,6 +134,8 @@ static const UINT32 freq_table[2][16] = {
 	398, 354, 316, 298, 276, 236, 210, 198, 176, 148, 132, 118,  98,  78,  66,  50
 }};
 
+#include "np_nes_tnd_table.h"
+
 static const UINT32 BITREVERSE[256] = {
 	0x00, 0x80, 0x40, 0xC0, 0x20, 0xA0, 0x60, 0xE0, 0x10, 0x90, 0x50, 0xD0, 0x30, 0xB0, 0x70, 0xF0,
 	0x08, 0x88, 0x48, 0xC8, 0x28, 0xA8, 0x68, 0xE8, 0x18, 0x98, 0x58, 0xD8, 0x38, 0xB8, 0x78, 0xF8,
@@ -174,8 +176,8 @@ void* NES_DMC_np_Create(UINT32 clock, UINT32 rate)
 	dmc->option[OPT_TRI_MUTE] = 1;
 	dmc->option[OPT_TRI_NULL] = 0;
 	dmc->option[OPT_DPCM_REVERSE] = 0;
-	dmc->tnd_table[0][0][0][0] = 0;
-	dmc->tnd_table[1][0][0][0] = 0;
+	//dmc->tnd_table[0][0][0][0] = 0;
+	//dmc->tnd_table[1][0][0][0] = 0;
 
 	dmc->apu = NULL;
 	dmc->frame_sequence_count = 0;
@@ -494,14 +496,14 @@ UINT32 NES_DMC_np_Render(void* chip, INT32 b[2])
 	dmc->out[1] = (dmc->mask & 2) ? 0 : dmc->out[1];
 	dmc->out[2] = (dmc->mask & 4) ? 0 : dmc->out[2];
 
-	m[0] = dmc->tnd_table[0][dmc->out[0]][0][0];
-	m[1] = dmc->tnd_table[0][0][dmc->out[1]][0];
-	m[2] = dmc->tnd_table[0][0][0][dmc->out[2]];
+	m[0] = tnd_table[0][dmc->out[0]][0][0];
+	m[1] = tnd_table[0][0][dmc->out[1]][0];
+	m[2] = tnd_table[0][0][0][dmc->out[2]];
 
 	if (dmc->option[OPT_NONLINEAR_MIXER])
 	{
 		INT32 ref = m[0] + m[1] + m[2];
-		INT32 voltage = dmc->tnd_table[1][dmc->out[0]][dmc->out[1]][dmc->out[2]];
+		INT32 voltage = tnd_table[1][dmc->out[0]][dmc->out[1]][dmc->out[2]];
 		int i;
 		if (ref)
 		{
@@ -593,6 +595,7 @@ void NES_DMC_np_SetAPU(void* chip, void* apu_)
 // Initializing TRI, NOISE, DPCM mixing table
 static void InitializeTNDTable(NES_DMC* dmc, double wt, double wn, double wd)
 {
+/*
 	// volume adjusted by 0.95 based on empirical measurements
 	static const double MASTER = 8192.0 * 0.95;
 	// truthfully, the nonlinear curve does not appear to match well
@@ -623,7 +626,7 @@ static void InitializeTNDTable(NES_DMC* dmc, double wt, double wn, double wd)
 			}
 		}
 	}
-
+	*/
 }
 
 void NES_DMC_np_Reset(void* chip)
