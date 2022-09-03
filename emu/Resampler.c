@@ -60,11 +60,11 @@ void Resmpl_Init(RESMPL_STATE* CAA)
 		if (CAA->resampleMode == 0x02 || (CAA->resampleMode == 0x01 && CAA->resampler == RESALGO_LINEAR_DOWN))
 			CAA->resampler = RESALGO_OLD;
 	}*/
-	
-	CAA->smplBufSize = CAA->smpRateSrc / 1;	// reserve buffer for 1 second of samples
+
+	CAA->smplBufSize = CAA->smpRateSrc / 50;	// reserve buffer for 20ms of samples
 	CAA->smplBufs[0] = (DEV_SMPL*)malloc(CAA->smplBufSize * 2 * sizeof(DEV_SMPL));
 	CAA->smplBufs[1] = &CAA->smplBufs[0][CAA->smplBufSize];
-	
+
 	CAA->smpP = 0x00;
 	CAA->smpLast = 0x00;
 	CAA->smpNext = 0x00;
