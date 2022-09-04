@@ -15,7 +15,7 @@
 #include "dblk_compr.h"
 #include "helper.h"
 
-#define fData	(&_fileData[_filePos])	// used by command handlers for better readability
+#define fData	(DataLoader_GetDataBlock(_dLoad, _filePos, 16))	// used by command handlers for better readability
 
 /*static*/ const VGMPlayer::COMMAND_INFO VGMPlayer::_CMD_INFO[0x100] =
 {

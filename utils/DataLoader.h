@@ -84,6 +84,12 @@ void DataLoader_ReadUntil(DATA_LOADER *loader, UINT32 fileOffset);
 /* read all data */
 void DataLoader_ReadAll(DATA_LOADER *loader);
 
+/* read a byte */
+UINT8 DataLoader_GetByte(DATA_LOADER *loader, UINT32 offset);
+
+/* read a block of data into internal buffer and return a pointer to it*/
+UINT8 *DataLoader_GetDataBlock(DATA_LOADER *loader, UINT32 offset, UINT32 size);
+
 /* convenience function for MemoryLoader,FileLoader, etc */
 void DataLoader_Setup(DATA_LOADER *loader, const DATA_LOADER_CALLBACKS *callbacks, void *context);
 

@@ -123,6 +123,16 @@ UINT32 DataLoader_Read(DATA_LOADER *loader, UINT32 numBytes)
 	return readBytes;
 }
 
+UINT8 DataLoader_GetByte(DATA_LOADER *loader, UINT32 offset)
+{
+	return loader->_data[offset];
+}
+
+UINT8 *DataLoader_GetDataBlock(DATA_LOADER *loader, UINT32 offset, UINT32 size)
+{
+	return loader->_data + offset;
+}
+
 void DataLoader_Deinit(DATA_LOADER *dLoader)
 {
 	if(dLoader == NULL) return;

@@ -276,7 +276,6 @@ protected:
 	CPCONV* _cpcUTF16;	// UTF-16 LE -> UTF-8 codepage conversion
 	DEV_LOGGER _logger;
 	DATA_LOADER *_dLoad;
-	const UINT8* _fileData;	// data pointer for quick access, equals _dLoad->GetFileData().data()
 	std::vector<UINT8> _yrwRom;	// cache for OPL4 sample ROM (yrw801.rom)
 	
 	enum
