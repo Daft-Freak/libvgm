@@ -41,6 +41,7 @@ typedef struct _data_loader
 	UINT32 _bytesTotal;
 	UINT32 _bytesLoaded;
 	UINT32 _readStopOfs;
+	UINT32 _readOffset;
 	UINT8 *_data;
 	const DATA_LOADER_CALLBACKS *_callbacks;
 	void *_context;

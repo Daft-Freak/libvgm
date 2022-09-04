@@ -248,7 +248,7 @@ UINT8 VGMPlayer::LoadFile(DATA_LOADER *dataLoader)
 		return 0xF0;	// invalid file
 	
 	_dLoad = dataLoader;
-	DataLoader_ReadAll(_dLoad);
+	//DataLoader_ReadAll(_dLoad);
 	
 	// parse main header
 	ParseHeader();
@@ -309,11 +309,11 @@ UINT8 VGMPlayer::ParseHeader(void)
 		_fileHdr.volumeGain = _hdrBuffer[0x7C] - 0x100;
 	_fileHdr.volumeGain <<= 3;	// 3.5 fixed point -> 8.8 fixed point
 	
-	if (! _fileHdr.eofOfs || _fileHdr.eofOfs > DataLoader_GetSize(_dLoad))
+	if (! _fileHdr.eofOfs || _fileHdr.eofOfs > DataLoader_GetTotalSize(_dLoad))
 	{
 		emu_logf(&_logger, PLRLOG_WARN, "Invalid EOF Offset 0x%06X! (should be: 0x%06X)\n",
-				_fileHdr.eofOfs, DataLoader_GetSize(_dLoad));
-		_fileHdr.eofOfs = DataLoader_GetSize(_dLoad);	// catch invalid EOF values
+				_fileHdr.eofOfs, DataLoader_GetTotalSize(_dLoad));
+		_fileHdr.eofOfs = DataLoader_GetTotalSize(_dLoad);	// catch invalid EOF values
 	}
 	_fileHdr.dataEnd = _fileHdr.eofOfs;
 	// command data ends at the GD3 offset if:
@@ -368,7 +368,7 @@ UINT8 VGMPlayer::ParseHeader(void)
 void VGMPlayer::ParseXHdr_Data32(UINT32 fileOfs, std::vector<XHDR_DATA32>& xData)
 {
 	xData.clear();
-	if (! fileOfs || fileOfs >= DataLoader_GetSize(_dLoad))
+	if (! fileOfs || fileOfs >= DataLoader_GetTotalSize(_dLoad))
 		return;
 	
 	UINT32 curPos = fileOfs;
@@ -377,7 +377,7 @@ void VGMPlayer::ParseXHdr_Data32(UINT32 fileOfs, std::vector<XHDR_DATA32>& xData
 	xData.resize(DataLoader_GetByte(_dLoad, curPos));	curPos ++;
 	for (curChip = 0; curChip < xData.size(); curChip ++, curPos += 0x05)
 	{
-		if (curPos + 0x05 > DataLoader_GetSize(_dLoad))
+		if (curPos + 0x05 > DataLoader_GetTotalSize(_dLoad))
 		{
 			xData.resize(curChip);
 			break;
@@ -394,7 +394,7 @@ void VGMPlayer::ParseXHdr_Data32(UINT32 fileOfs, std::vector<XHDR_DATA32>& xData
 void VGMPlayer::ParseXHdr_Data16(UINT32 fileOfs, std::vector<XHDR_DATA16>& xData)
 {
 	xData.clear();
-	if (! fileOfs || fileOfs >= DataLoader_GetSize(_dLoad))
+	if (! fileOfs || fileOfs >= DataLoader_GetTotalSize(_dLoad))
 		return;
 	
 	UINT32 curPos = fileOfs;
@@ -403,7 +403,7 @@ void VGMPlayer::ParseXHdr_Data16(UINT32 fileOfs, std::vector<XHDR_DATA16>& xData
 	xData.resize(DataLoader_GetByte(_dLoad, curPos));	curPos ++;
 	for (curChip = 0; curChip < xData.size(); curChip ++, curPos += 0x04)
 	{
-		if (curPos + 0x04 > DataLoader_GetSize(_dLoad))
+		if (curPos + 0x04 > DataLoader_GetTotalSize(_dLoad))
 		{
 			xData.resize(curChip);
 			break;

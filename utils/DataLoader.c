@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -14,6 +15,7 @@ UINT8 DataLoader_Reset(DATA_LOADER *loader)
 		free(loader->_data);
 		loader->_data = NULL;
 		loader->_bytesLoaded = 0;
+		loader->_readOffset = 0;
 	}
 
 	loader->_status = DLSTAT_EMPTY;
@@ -59,6 +61,7 @@ UINT8 DataLoader_Load(DATA_LOADER *loader)
 	if(ret) return ret;
 
 	loader->_bytesLoaded = 0x00;
+	loader->_readOffset = 0;
 	loader->_status = DLSTAT_LOADING;
 	loader->_bytesTotal = loader->_callbacks->dlength(loader->_context);
 
@@ -107,10 +110,15 @@ UINT32 DataLoader_Read(DATA_LOADER *loader, UINT32 numBytes)
 		return 0;
 	}
 
+	if(loader->_readOffset) {
+		loader->_callbacks->dseek(loader->_context, loader->_bytesLoaded, SEEK_SET);
+	}
+
 	numBytes = endOfs - loader->_bytesLoaded;
 	readBytes = loader->_callbacks->dread(loader->_context,&loader->_data[loader->_bytesLoaded],numBytes);
 	if(!readBytes) return 0;
 	loader->_bytesLoaded += readBytes;
+	loader->_readOffset = 0;
 
 	/* Note: The check (loaded >= total) is necessary, as the EoF flag is set only when
 	         reading *beyond* the end of the file. Stopping at the last byte doesn't set it. */
@@ -123,14 +131,33 @@ UINT32 DataLoader_Read(DATA_LOADER *loader, UINT32 numBytes)
 	return readBytes;
 }
 
+static void GetMoreData(DATA_LOADER *loader, UINT32 offset, UINT32 size)
+{
+	// assuming _data is at least loader->_readStopOfs bytes
+	if(size <= loader->_readStopOfs)
+		size = loader->_readStopOfs;
+	else
+		loader->_data = (UINT8 *)realloc(loader->_data,size);
+
+	loader->_readOffset = offset;
+	loader->_callbacks->dseek(loader->_context, loader->_readOffset, SEEK_SET);
+	loader->_bytesLoaded = loader->_callbacks->dread(loader->_context, loader->_data, size);
+}
+
 UINT8 DataLoader_GetByte(DATA_LOADER *loader, UINT32 offset)
 {
-	return loader->_data[offset];
+	if(offset - loader->_readOffset >= loader->_bytesLoaded)
+		GetMoreData(loader, offset, 1);
+
+	return loader->_data[offset - loader->_readOffset];
 }
 
 UINT8 *DataLoader_GetDataBlock(DATA_LOADER *loader, UINT32 offset, UINT32 size)
 {
-	return loader->_data + offset;
+	if(offset + size - loader->_readOffset > loader->_bytesLoaded)
+		GetMoreData(loader, offset, size);
+
+	return loader->_data + offset - loader->_readOffset;
 }
 
 void DataLoader_Deinit(DATA_LOADER *dLoader)

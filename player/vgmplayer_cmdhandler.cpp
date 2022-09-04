@@ -700,7 +700,7 @@ void VGMPlayer::Cmd_DataBlock(void)
 		
 		if (dblkType == 0x7F)
 		{
-			ReadPCMComprTable(dblkLen, &fData[0x00], &_pcmComprTbl);
+			ReadPCMComprTable(dblkLen, DataLoader_GetDataBlock(_dLoad, _filePos, dblkLen), &_pcmComprTbl);
 		}
 		else
 		{
@@ -708,7 +708,7 @@ void VGMPlayer::Cmd_DataBlock(void)
 			PCM_CDB_INF dbCI;
 			UINT32 oldLen = (UINT32)pcmBnk->data.size();
 			dataLen = dblkLen;
-			dataPtr = &fData[0x00];
+			dataPtr = DataLoader_GetDataBlock(_dLoad, _filePos, dataLen);
 			
 			if (dblkType & 0x40)
 			{
